@@ -47,39 +47,39 @@ The project uses a lot of packages, but the main ones for this app are:
 
 ## Database Tables
 
-The app defines these tables in `project/main.py`:
+Complete database schema is documented in [`schema.sql`](schema.sql). The app defines these core tables:
 
-- `Teacher`
+- **Teacher**
   - `t_id` (primary key)
-  - `t_name`
-  - `sub_code`
-  - `sub_name`
-  - `dob`
+  - `t_name` — teacher name
+  - `sub_code` — subject code
+  - `sub_name` — subject name
+  - `dob` — date of birth
 
-- `Batch`
+- **Batch**
   - `b_id` (primary key)
-  - `day`
-  - `time_in`
-  - `time_out`
-  - `t_id`
+  - `day` — batch day
+  - `time_in` — start time
+  - `time_out` — end time
+  - `t_id` (foreign key → Teacher)
 
-- `System`
+- **System**
   - `sys_id` (primary key)
-  - `status`
+  - `status` — computer system status
 
-- `Student`
+- **Student**
   - `s_id` (primary key)
-  - `s_name`
-  - `dob`
-  - `b_id`
-  - `sys_id`
-  - `email`
+  - `s_name` — student name
+  - `dob` — date of birth
+  - `b_id` (foreign key → Batch)
+  - `sys_id` (foreign key → System)
+  - `email` — student email
 
-- `Experiment`
+- **Experiment**
   - `e_id` (primary key)
-  - `title`
-  - `doe`
-  - `t_id`
+  - `title` — experiment title
+  - `doe` — date of experiment
+  - `t_id` (foreign key → Teacher)
 
 ## What You Can Do in the App
 
@@ -91,77 +91,88 @@ The app defines these tables in `project/main.py`:
 
 ## Report Images
 
-The project report includes design diagrams and interface screenshots. I extracted the important image assets from `Final Draft 3.docx` and placed them in `docs/docx_images/`.
+The project report includes design diagrams and interface screenshots. I extracted the important image assets from `Final Draft 3.docx` and placed them in `docs/ScreenShots/`.
 
 ### ER and Schema Diagrams
 
-![ER diagram](docs/docx_images/image3.jpeg)
+![ER diagram](docs/ScreenShots/image3.jpeg)
 
 *Figure 1: ER diagram showing Teacher, Student, Batch, System, and Experiment relationships*
 
-![Relational schema diagram](docs/docx_images/image4.png)
+![Relational schema diagram](docs/ScreenShots/image4.png)
 
 *Figure 2: relational schema diagram and table mappings*
 
 ### Important Screenshots
 
-![Admin homepage menu](docs/docx_images/image32.png)
+![Admin homepage menu](docs/ScreenShots/image32.png)
 
 *Figure 3: admin navigation menu for forms and tables*
 
-![Login and landing page](docs/docx_images/image26.png)
+![Login and landing page](docs/ScreenShots/image26.png)
 
 *Figure 4: homepage with login section*
 
-![Add Teacher screen](docs/docx_images/image27.png)
+![Add Teacher screen](docs/ScreenShots/image27.png)
 
 *Figure 5: add teacher form*
 
-![Add Batch screen](docs/docx_images/image28.png)
+![Add Batch screen](docs/ScreenShots/image28.png)
 
 *Figure 6: add batch form*
 
-![Add Student screen](docs/docx_images/image29.png)
+![Add Student screen](docs/ScreenShots/image29.png)
 
 *Figure 7: add student form*
 
-![Add Experiment screen](docs/docx_images/image30.png)
+![Add Experiment screen](docs/ScreenShots/image30.png)
 
 *Figure 8: add experiment form*
 
 ## How to Run It
 
-1. Install Python 3.9 or newer.
-2. Install MySQL and create a database named `lab`.
-3. Activate the virtual environment if you have one.
-4. Install the dependencies:
-   ```powershell
-   .\.venv\Scripts\python -m pip install -r requirements.txt
-   .\.venv\Scripts\python -m pip install pymysql
-   ```
-5. Check the database connection in `project/main.py`:
-   ```python
-   app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/lab'
-   ```
-6. Check `config.json` for admin login details:
-   ```json
-   {
-       "params": {
-           "user": "Admin",
-           "password": "Admin123"
-       }
-   }
-   ```
-7. Run the app:
-   ```powershell
-   .\.venv\Scripts\python .\project\main.py
-   ```
-8. Open `http://127.0.0.1:5000/` in your browser.
-9. Go to `http://127.0.0.1:5000/adminlogin` to sign in.
+### Quick Start (Automatic Setup)
 
-## Note on the Database
+1. **Install Python 3.9 or newer.**
 
-The app expects the `lab` database and the tables to already exist. The PDF report has screenshots and examples of how the tables are set up. If the tables are missing, you will need to create them manually.
+2. **Activate the virtual environment:**
+   ```powershell
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+3. **Install the dependencies:**
+   ```powershell
+   python -m pip install -r requirements.txt
+   ```
+
+4. **Run the app (database will auto-create on first startup):**
+   ```powershell
+   python .\project\main.py
+   ```
+
+5. **Open the app in your browser:**
+   - Homepage: `http://127.0.0.1:5000/`
+   - Admin login: `http://127.0.0.1:5000/adminlogin`
+
+6. **Log in with default admin credentials:**
+   ```
+   Username: Admin
+   Password: Admin123
+   ```
+
+### Database Details
+
+- **By default**, the app uses **SQLite** (`lab.db`) for local development — no MySQL installation needed.
+- Database tables are **automatically created** on first app startup.
+- To use MySQL instead, set the `DATABASE_URL` environment variable:
+  ```powershell
+  $env:DATABASE_URL="mysql+pymysql://username:password@localhost/lab"
+  ```
+
+### Configuration
+
+- **Admin credentials** are stored in `config.json`
+- **Database schema** is defined in SQLAlchemy models in `project/main.py` and documented in `schema.sql`
 
 ## Notes About the Code
 

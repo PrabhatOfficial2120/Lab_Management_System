@@ -6,27 +6,28 @@ from flask.globals import request, session
 import json
 import os
 
-#my DB connection
-local_server=True
 # Configure Flask to use project templates and static assets
-app=Flask(__name__, 
+app = Flask(__name__, 
     static_folder=os.path.join(os.path.dirname(__file__), 'templates', 'static'),
     static_url_path='/static',
     template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 app.secret_key="prabhatpraveen"
 
-#authentication in
+# Database configuration - supports SQLite by default, MySQL via DATABASE_URL env var
+db_url = os.environ.get('DATABASE_URL')
+if db_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+else:
+    # Default to SQLite for local development
+    db_path = os.path.join(os.path.dirname(__file__), '..', 'lab.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-login_manager=LoginManager(app)
-login_manager.login_view='login'
+db = SQLAlchemy(app)
 
-
-
-
-
-# app.config['SQLALCHEMY_DATABASE_URI']='mysql://username:password@localhost/database'
-app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:@localhost/lab'
-db=SQLAlchemy(app) 
+# Authentication
+login_manager = LoginManager(app)
+login_manager.login_view = 'login' 
 
 
 config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
@@ -38,37 +39,45 @@ def load_user(user_id):
     return Teacher.query.get(int(user_id)) or Student.query.get(int(user_id))
 
 
-class Teacher(UserMixin ,db.Model):
-    t_id=db.Column(db.Integer, primary_key=True)
-    t_name=db.Column(db.String(100))
-    sub_code=db.Column(db.String(10))
-    sub_name=db.Column(db.String(100))
-    dob=db.Column(db.String(1000),unique=True)
+class Teacher(UserMixin, db.Model):
+    t_id = db.Column(db.Integer, primary_key=True)
+    t_name = db.Column(db.String(100))
+    sub_code = db.Column(db.String(10))
+    sub_name = db.Column(db.String(100))
+    dob = db.Column(db.String(1000))
+    batches = db.relationship('Batch', backref='teacher', lazy=True)
+    experiments = db.relationship('Experiment', backref='teacher', lazy=True)
 
 class Batch(db.Model):
-    b_id=db.Column(db.Integer, primary_key=True)
-    day=db.Column(db.String(20))
-    time_in=db.Column(db.String(20))
-    time_out=db.Column(db.String(20))
-    t_id=db.Column(db.Integer,unique=True)
+    b_id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.String(20))
+    time_in = db.Column(db.String(20))
+    time_out = db.Column(db.String(20))
+    t_id = db.Column(db.Integer, db.ForeignKey('teacher.t_id'))
+    students = db.relationship('Student', backref='batch', lazy=True)
 
 class System(db.Model):
-    sys_id=db.Column(db.Integer, primary_key=True)
-    status=db.Column(db.String(50))
+    sys_id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(50))
+    students = db.relationship('Student', backref='system', lazy=True)
 
-class Student(UserMixin , db.Model):
-    s_id=db.Column(db.Integer, primary_key=True)
-    s_name=db.Column(db.String(100))
-    dob=db.Column(db.String(1000))
-    b_id=db.Column(db.Integer, unique=True)
-    sys_id=db.Column(db.Integer,unique=True)
-    email=db.Column(db.String(100))
+class Student(UserMixin, db.Model):
+    s_id = db.Column(db.Integer, primary_key=True)
+    s_name = db.Column(db.String(100))
+    dob = db.Column(db.String(1000))
+    b_id = db.Column(db.Integer, db.ForeignKey('batch.b_id'))
+    sys_id = db.Column(db.Integer, db.ForeignKey('system.sys_id'))
+    email = db.Column(db.String(100))
 
-class Experiment (db.Model):
-    e_id=db.Column(db.Integer, primary_key=True)
-    title=db.Column(db.String(100))
-    doe=db.Column(db.String(50))
-    t_id=db.Column(db.Integer,unique=True)
+class Experiment(db.Model):
+    e_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
+    doe = db.Column(db.String(50))
+    t_id = db.Column(db.Integer, db.ForeignKey('teacher.t_id'))
+
+# Initialize database on startup
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def home():
@@ -356,12 +365,12 @@ def updatestudent():
             print(nuser)
             if nuser :
 
-                nuser.s_id=s_id
-                nuser.s_name=sname
-                nuser.dob=s_email
-                nuser.b_id=bid
-                nuser.sys_id=sysid
-                nuser.email=s_dob
+                nuser.s_id = s_id
+                nuser.s_name = sname
+                nuser.dob = s_dob
+                nuser.b_id = bid
+                nuser.sys_id = sysid
+                nuser.email = s_email
                 db.session.commit()
                 flash("Data Updated in Database","success")
                 return render_template("admin.html")
@@ -446,6 +455,5 @@ def teacherlogin():
 def studentlogin():
     return render_template("studentlogin.html")
 
-#testing for connection of db
-
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
