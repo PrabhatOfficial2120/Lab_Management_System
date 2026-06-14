@@ -1,0 +1,67 @@
+{% extends 'baseadmin.html'%}
+
+{% block title %}
+  Add Student
+{% endblock title %}
+
+{% block body %}
+
+  {% include 'message.html' %}
+  <div class="pagetitle">
+    <h1>Data Table</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Table</li>
+        <li class="breadcrumb-item active">Data</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-6">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Student Table</h5>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Student ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">DOB</th>
+                    <th scope="col">Batch ID</th>
+                    <th scope="col">System ID</th>
+                    <th scope="col">Email</th>
+                  </tr>
+                </thead>
+                  {% for student in Student %}
+                  <tr>
+                  <th scope="row">{{student.s_id}}</th>
+                  <td>{{student.s_name}}
+                  </td>
+                  <td>{{student.dob}}
+                  </td>
+                  <td>{{student.b_id}}
+                </td>
+                  <td>{{student.sys_id}}
+                  </td>
+                  <td>{{student.email}}
+                  </td>
+                  </tr>
+                  {% endfor %}
+              </table>
+              
+            
+            
+
+          </div>
+        </div>
+
+      </div>
+
+      
+    </div>
+  </section>
+{% endblock body %}

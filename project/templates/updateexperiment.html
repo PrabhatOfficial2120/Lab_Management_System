@@ -1,0 +1,72 @@
+{% extends 'baseadmin.html'%}
+
+{% block title %}
+ Update Experiment
+{% endblock title %}
+
+{% block body %}
+
+  {% include 'message.html' %}
+  <div class="pagetitle">
+    <h1>Updating Data</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Forms</li>
+        <li class="breadcrumb-item active">Data</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-6">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Update Experiment</h5>
+
+              <!-- General Form Elements -->
+              <form action="/updateexperiment" method="post">
+                <div class="row mb-3">
+                  <label for="inputNumber" class="col-sm-2 col-form-label">Existing Experiment ID</label>
+                  <div class="col-sm-10">
+                    <input type="number" class="form-control" name="eid" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputText" class="col-sm-2 col-form-label">Title</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" name="title">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputDate" class="col-sm-2 col-form-label">Date Of Experiment</label>
+                  <div class="col-sm-10">
+                    <input type="Date" class="form-control" name="doe">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputNumber" class="col-sm-2 col-form-label">Teacher ID</label>
+                  <div class="col-sm-10">
+                    <input type="number" class="form-control" name="etid" required>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="col-sm-2 col-form-label">UPDATE</label>
+                  <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">UPDATE</button>
+                  </div>
+                </div>
+
+              </form><!-- End General Form Elements -->
+
+            </div>
+          </div>
+
+        </div>
+
+        
+      </div>
+    </section>
+{% endblock body %}
